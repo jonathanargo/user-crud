@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -49,10 +50,22 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        // TODO JSA - 
         return Inertia::render('Users/Show', [
             'user' => $user
         ]);
+    }
+
+    public function actionEdit(User $user)
+    {
+        return Inertia::render('Users/Edit', [
+            'user' => $user
+        ]);
+    }
+
+    public function actionUpdate(User $user, UpdateUserRequest $request)
+    {
+        $user->update(request()->all());
+        return redirect(route('users.index'));
     }
 
 }
