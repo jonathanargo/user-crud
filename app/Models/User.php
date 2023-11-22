@@ -9,6 +9,8 @@ class User extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +27,5 @@ class User extends Model
         'zip',
         'country',
         'timezone',
-        'created'
     ];
 }
