@@ -28,13 +28,12 @@ export default function Index({ auth, users }) {
                     <Dropdown.Item onClick={() => router.visit(route('users.show', user.id))}>Details</Dropdown.Item>
                     <Dropdown.Item onClick={() => handleDeleteUser(user.id)}>Delete</Dropdown.Item>
                 </Dropdown.Menu>
-                {/*<Button variant="danger" onClick={() => handleDeleteUser(user.id)}>Delete</Button>*/}
             </Dropdown>
         )}
     ];
 
     const handleDeleteUser = (id) => {
-        console.log("Deleting user "+id);
+        router.delete(route('users.destroy', id));
     }
 
     const showCreateForm = () => {

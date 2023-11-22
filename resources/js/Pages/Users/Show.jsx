@@ -8,6 +8,8 @@ export default function Show({ auth, user }) {
         router.visit(route('users.index'));
     }
 
+    console.log(user);
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="User Details" />
@@ -72,7 +74,18 @@ export default function Show({ auth, user }) {
                             {user.country}
                         </div>
                     </Form.Group>
-                    {/* todo - add timestamps */}
+                    <Form.Group controlId="created" className="mb-3">
+                        <Form.Label className="font-bold">Created At</Form.Label>
+                        <div className="mt-1 text-base text-gray-900 sm:mt-0 sm:col-span-2">
+                            {user.created ? new Date(user.created).toLocaleString() : 'N/A'}
+                        </div>
+                    </Form.Group>
+                    <Form.Group controlId="last_updated" className="mb-3">
+                        <Form.Label className="font-bold">Updated At</Form.Label>
+                        <div className="mt-1 text-base text-gray-900 sm:mt-0 sm:col-span-2">
+                            {user.last_updated ? new Date(user.last_updated).toLocaleString() : 'N/A'}
+                        </div>
+                    </Form.Group>
                     <Button variant="secondary" onClick={returnCallback}>
                         Return
                     </Button>
