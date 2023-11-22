@@ -26,6 +26,7 @@ export default function Index({ auth, users }) {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     <Dropdown.Item onClick={() => router.visit(route('users.show', user.id))}>Details</Dropdown.Item>
+                    <Dropdown.Item onClick={() => router.visit(route('users.edit', user.id))}>Edit</Dropdown.Item>
                     <Dropdown.Item onClick={() => handleDeleteUser(user.id)}>Delete</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>

@@ -25,7 +25,7 @@ abstract class AbstractUserRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:128'],
             'last_name' => ['required', 'string', 'max:128'],
-            'email' => ['required', 'string', 'email', 'max:128', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:128'],
             'mobile_number' => ['required', 'string', 'max:32'],
             'address' => ['required', 'string', 'max:128'],
             'city' => ['required', 'string', 'max:128'],

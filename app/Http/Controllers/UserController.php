@@ -26,7 +26,10 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/UserForm', [
+            'user' => new User(),
+            'mode' => 'create'
+        ]);
     }
 
     /**
@@ -55,14 +58,15 @@ class UserController extends Controller
         ]);
     }
 
-    public function actionEdit(User $user)
+    public function edit(User $user)
     {
-        return Inertia::render('Users/Edit', [
-            'user' => $user
+        return Inertia::render('Users/UserForm', [
+            'user' => $user,
+            'mode' => 'edit'
         ]);
     }
 
-    public function actionUpdate(User $user, UpdateUserRequest $request)
+    public function update(User $user, UpdateUserRequest $request)
     {
         $user->update(request()->all());
         return redirect(route('users.index'));

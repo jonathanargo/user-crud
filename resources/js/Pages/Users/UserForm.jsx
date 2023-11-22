@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Form, Button } from 'react-bootstrap';
 import { useForm, Head, router } from '@inertiajs/react';
@@ -10,9 +10,10 @@ import states from 'states-us';
 
 import InputMask from 'react-input-mask';
 
-export default function Create({ auth }) {
+export default function UserForm({ auth, user, mode = 'create'}) {
 
     const { data, setData, post, patch, processing, errors, clearErrors } = useForm({
+        id: '',
         first_name: '',
         last_name: '',
         email: '',
@@ -24,6 +25,12 @@ export default function Create({ auth }) {
         country: ''
     });
 
+    useEffect(() => {
+        if (mode === 'edit') {
+            setData(user);
+        }
+    }, [mode, user]);
+
     const [showError, setShowError] = useState(false);
 
     const handleChange = (e) => {
@@ -33,22 +40,32 @@ export default function Create({ auth }) {
 
     const submitCallback = (e) => {
         e.preventDefault;
-        post(route('users.store'), {
-            onError: (e) => {
-                console.error(e);
-                setShowError(true);
-            }
-        });
+        if (mode === 'create') {
+            post(route('users.store'), {
+                onError: (e) => {
+                    console.error(e);
+                    setShowError(true);
+                }
+            });
+        } else {
+            patch(route('users.update', user.id), {
+                onError: (e) => {
+                    console.error(e);
+                    setShowError(true);
+                }
+            });
+        }
     };
 
     const closeCallback = () => {
         router.visit(route('users.index'));
     };
 
-    console.log(states);
+    let title = (mode === 'create' ? 'Create User' : 'Update User');
+
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Create User" />
+            <Head title={title} />
             <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
                 <h1 className="font-bold">Profile Info</h1>
                 <p>Manage your personal information, timezone, and profile image.</p>
@@ -61,7 +78,11 @@ export default function Create({ auth }) {
                     </Alert>
                 }
                 <Form>
+                    <Form.Group controlId="studentId">
+                        <Form.Control type="hidden" name="id" value={data.id} />
+                    </Form.Group>
                     <div className="flex space-x-4">
+                        
                         <Form.Group controlId="first_name" className="mb-3 flex-grow">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control

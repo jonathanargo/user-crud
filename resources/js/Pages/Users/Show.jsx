@@ -11,7 +11,9 @@ export default function Show({ auth, user }) {
         router.visit(route('users.index'));
     }
 
-    console.log(user);
+    const editCallback = () => {
+        router.visit(route('users.edit', user.id));
+    }
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -89,7 +91,10 @@ export default function Show({ auth, user }) {
                             {user.last_updated ? new Date(user.last_updated).toLocaleString() : 'N/A'}
                         </div>
                     </Form.Group>
-                    <Button variant="secondary" onClick={returnCallback}>
+                    <Button variant="primary" onClick={editCallback}>
+                        Edit
+                    </Button>
+                    <Button variant="secondary" onClick={returnCallback} className='ml-3'>
                         Return
                     </Button>
                 </Form>
