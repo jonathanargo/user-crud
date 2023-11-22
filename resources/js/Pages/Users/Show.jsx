@@ -3,6 +3,9 @@ import { useForm, Head, router }  from '@inertiajs/react';
 import { Form, Button } from 'react-bootstrap';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
+import { getName } from 'country-list';
+import states from 'states-us';
+
 export default function Show({ auth, user }) {
     const returnCallback = () => {
         router.visit(route('users.index'));
@@ -59,7 +62,7 @@ export default function Show({ auth, user }) {
                     <Form.Group controlId="state" className="mb-3">
                         <Form.Label className="font-bold">State / Province</Form.Label>
                         <div className="mt-1 text-base text-gray-900 sm:mt-0 sm:col-span-2">
-                            {user.state}
+                            {states.find(state => state.abbreviation === user.state).name}
                         </div>
                     </Form.Group>
                     <Form.Group controlId="zip" className="mb-3">
@@ -71,7 +74,7 @@ export default function Show({ auth, user }) {
                     <Form.Group controlId="country" className="mb-3">
                         <Form.Label className="font-bold">Country</Form.Label>
                         <div className="mt-1 text-base text-gray-900 sm:mt-0 sm:col-span-2">
-                            {user.country}
+                            {getName(user.country)}
                         </div>
                     </Form.Group>
                     <Form.Group controlId="created" className="mb-3">

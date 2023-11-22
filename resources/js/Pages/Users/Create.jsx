@@ -5,6 +5,10 @@ import { Form, Button } from 'react-bootstrap';
 import { useForm, Head, router } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import { Alert } from 'react-bootstrap';
+import { getCodeList } from 'country-list';
+import states from 'states-us';
+
+import InputMask from 'react-input-mask';
 
 export default function Create({ auth }) {
 
@@ -41,6 +45,7 @@ export default function Create({ auth }) {
         router.visit(route('users.index'));
     };
 
+    console.log(states);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create User" />
@@ -93,12 +98,14 @@ export default function Create({ auth }) {
 
                     <Form.Group controlId="mobile_number" className="mb-3">
                         <Form.Label>Mobile Number</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="mobile_number"
+                        <InputMask
+                            mask="999-999-9999"
+                            maskChar="_"
                             value={data.mobile_number}
                             onChange={handleChange}
-                        />
+                        >
+                        {() => <Form.Control type="text" name="mobile_number" />}
+                        </InputMask>
                         <InputError message={errors['mobile_number']} className="mt-2" />
                     </Form.Group>
 
@@ -126,12 +133,12 @@ export default function Create({ auth }) {
 
                     <Form.Group controlId="state" className="mb-3">
                         <Form.Label>State / Province</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="state"
-                            value={data.state}
-                            onChange={handleChange}
-                        />
+                        <Form.Select name="state" value={data.state} onChange={handleChange}>
+                            <option key="" value=""></option>
+                            {states.map((state, index) => (
+                                <option key={index} value={state.abbreviation}>{state.name}</option>
+                            ))}
+                        </Form.Select>
                         <InputError message={errors['state']} className="mt-2" />
                     </Form.Group>
 
@@ -149,12 +156,14 @@ export default function Create({ auth }) {
                     { /* TODO JSA - Change to drop down */}
                     <Form.Group controlId="country" className="mb-3">
                         <Form.Label>Country</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="country"
-                            value={data.country}
-                            onChange={handleChange}
-                        />
+                        <Form.Select name="country" value={data.country} onChange={handleChange}>
+                            <option key="" value=""></option>
+                            {Object.entries(getCodeList()).map(([code, name], index) => (
+                                <option key={index} value={code}>
+                                    {name}
+                                </option>
+                            ))}
+                        </Form.Select>
                         <InputError message={errors['country']} className="mt-2" />
                     </Form.Group>
                     <hr />
