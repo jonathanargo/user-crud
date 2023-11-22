@@ -45,5 +45,14 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect(route('users.index'));
-    }    
+    }
+
+    public function show(User $user)
+    {
+        // TODO JSA - 
+        return Inertia::render('Users/Show', [
+            'user' => $user
+        ]);
+    }
+
 }

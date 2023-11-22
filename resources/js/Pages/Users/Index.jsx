@@ -2,7 +2,7 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useForm, Head } from '@inertiajs/react';
 import Button from 'react-bootstrap/Button';
-import { Alert, Col, Row, Table } from 'react-bootstrap';
+import { Alert, Col, Row, Table, Dropdown } from 'react-bootstrap';
 import { router } from '@inertiajs/react';
 
 import {
@@ -19,10 +19,17 @@ export default function Index({ auth, users }) {
         { title: 'First Name', prop: 'first_name', isSortable: true},
         { title: 'Last Name', prop: 'last_name', isSortable: true},
         { title: 'Email', prop: 'email', isSortable: true},
-        { title: 'Actions', prop: 'actions', cell: (student) => (
-            <>
-                <Button variant="danger" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
-            </>
+        { title: '', prop: 'actions', cell: (user) => (
+            <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                    Actions
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => router.visit(route('users.show', user.id))}>Details</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleDeleteUser(user.id)}>Delete</Dropdown.Item>
+                </Dropdown.Menu>
+                {/*<Button variant="danger" onClick={() => handleDeleteUser(user.id)}>Delete</Button>*/}
+            </Dropdown>
         )}
     ];
 

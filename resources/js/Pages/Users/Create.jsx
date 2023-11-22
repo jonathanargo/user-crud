@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Form, Button } from 'react-bootstrap';
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, router } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import { Alert } from 'react-bootstrap';
 
@@ -29,13 +29,9 @@ export default function Create({ auth }) {
 
     const submitCallback = (e) => {
         e.preventDefault;
-        console.log('Submitting form');
         post(route('users.store'), {
-            onSuccess: () => {
-                console.log('Success');
-            },
             onError: (e) => {
-                console.log('Error', e);
+                console.error(e);
                 setShowError(true);
             }
         });
@@ -129,7 +125,7 @@ export default function Create({ auth }) {
                     </Form.Group>
 
                     <Form.Group controlId="state" className="mb-3">
-                        <Form.Label>State</Form.Label>
+                        <Form.Label>State / Province</Form.Label>
                         <Form.Control
                             type="text"
                             name="state"
@@ -161,7 +157,7 @@ export default function Create({ auth }) {
                         />
                         <InputError message={errors['country']} className="mt-2" />
                     </Form.Group>
-                    <hr></hr>
+                    <hr />
 
                     <Button variant="primary" onClick={submitCallback} disabled={processing}>
                         Save
