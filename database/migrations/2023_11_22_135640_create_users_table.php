@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('zip')->nullable();
             $table->string('country', 2)->nullable();
             $table->string('timezone', 32)->nullable();
-            $table->dateTime('created')->nullable()->useCurrent(); // TODO JSA - Does this change on update?
+            $table->dateTime('created')->nullable()->useCurrent();
             $table->dateTime('last_updated')->nullable()->useCurrentOnUpdate();
         });
     }

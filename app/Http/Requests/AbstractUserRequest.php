@@ -11,7 +11,6 @@ abstract class AbstractUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // return $this->user()->can('create', User::class); // TODO JSA - Test?
         return $this->user() !== null;
     }
 

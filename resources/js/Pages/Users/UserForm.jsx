@@ -174,7 +174,6 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <InputError message={errors['zip']} className="mt-2" />
                     </Form.Group>
 
-                    { /* TODO JSA - Change to drop down */}
                     <Form.Group controlId="country" className="mb-3">
                         <Form.Label>Country</Form.Label>
                         <Form.Select name="country" value={data.country} onChange={handleChange}>

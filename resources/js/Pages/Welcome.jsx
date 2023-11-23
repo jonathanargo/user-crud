@@ -33,7 +33,6 @@ export default function Welcome({ auth, laravelVersion, phpVersion, canRegister 
                     )}
                 </div>
                 
-                { /* TODO - need to adjust this */ }
                 <div className="mt-10 bg-white rounded-lg p-6 shadow-lg w-3/4 mx-auto">
                     Please log in using the navigation above.
                 </div>

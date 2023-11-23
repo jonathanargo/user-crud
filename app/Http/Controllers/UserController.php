@@ -51,6 +51,9 @@ class UserController extends Controller
         return redirect(route('users.index'));
     }
 
+    /**
+     * Displays the specified resource.
+     */
     public function show(User $user)
     {
         return Inertia::render('Users/Show', [
@@ -58,6 +61,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(User $user)
     {
         return Inertia::render('Users/UserForm', [
@@ -66,10 +72,12 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Updates the specified resource.
+     */
     public function update(User $user, UpdateUserRequest $request)
     {
         $user->update(request()->all());
         return redirect(route('users.index'));
     }
-
 }

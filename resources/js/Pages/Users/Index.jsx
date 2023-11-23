@@ -41,6 +41,10 @@ export default function Index({ auth, users }) {
         router.visit(route('users.create'));
     }
 
+    /*
+        This paginated table component is a bit of a mess in terms of responsiveness. I couldn't find a better, more responsive
+        paginated table component that was also free. It'll do for a quick fix though.
+    */
     function TableComponent({ users }) {
         return (
             <DatatableWrapper 
