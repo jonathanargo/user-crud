@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TestController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,5 +40,8 @@ Route::middleware('auth')->group(function () {
 Route::resource('users', UserController::class)
     ->only(['index', 'create', 'store', 'show', 'destroy', 'update', 'edit'])
     ->middleware(['auth', 'verified']);
+
+Route::resource('test', TestController::class)
+    ->only(['index']);
 
 require __DIR__.'/auth.php';
