@@ -165,7 +165,7 @@ class ManualUser
     /**
      * Requirement: Validation of the object’s properties
      */
-    protected function validate(): bool
+    public function validate(): bool
     {
         // The context is important for certain validation rules that are only validated on insert or update.
         $context = 'insert';
@@ -179,8 +179,12 @@ class ManualUser
         return $result;
     }
 
-    /** Returns all model validation errors */
-    public function getErrors(): array
+    /**
+     * Returns model validation errors
+     * 
+     * @param bool $clearErrors If true, clears the errors after returning them
+     */
+    public function getErrors(bool $clearErrors = true): array
     {
         return $this->errors;
     }
@@ -266,10 +270,9 @@ class ManualUser
         // insert or update the record
         if ($this->isNewRecord()) {
             $id = DB::table('users')->insertGetId($attributes);
-            $this->id = $id;
+            $this->id = $id; // Populate ID
         } else {
-            $attributes['id'] = $this->id; //Need to set the ID for the update
-            DB::table('users')->update($attributes);
+            DB::table('users')->where('id', $this->id)->update($attributes);
         }
 
         // Reload the model to get fresh data
