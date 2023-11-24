@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Exceptions\AttributeDoesNotExistException;
-use App\Exceptions\ValidationRuleException;
 
 class AttributeValidator
 {
@@ -41,14 +40,19 @@ class AttributeValidator
                     $r[1] = null;
                 }
 
+                if ($r[0] === 'on') {
+                    // These are meta-rules and don't need to be validated
+                    continue;
+                }
+
                 $method = 'validate' . ucfirst($r[0]);
 
                 if (!method_exists(self::class, $method)) {
                     // We'll throw this as a generic exception. This should stop execution.
-                    throw new Exception("Validation method {$method} does not exist.");
+                    throw new \Exception("Validation method {$method} does not exist.");
                 }
 
-                $this::$method($attributes[$attribute], $r[1]);
+                $this::$method($attribute, $attributes[$attribute], $r[1]);
             }
         }
 
@@ -69,32 +73,32 @@ class AttributeValidator
         $this->errors[$attribute][] = $error;
     }
 
-    protected function validateRequired($attribute, $options = null): bool
+    protected function validateRequired($attribute, $value, $options = null): bool
     {
-        if (empty($attribute)) {
+        if (empty($value)) {
             $this->addError($attribute, "Value is required.");
         }
 
         return true;
     }
 
-    protected function validateString($attribute, $options = null)
+    protected function validateString($attribute, $value, $options = null)
     {
-        if (!is_string($attribute)) {
+        if (!is_string($value) && !is_null($value)) {
             $this->addError($attribute, "Value must be a string.");
         }
     }
 
-    protected function validateInteger($attribute, $options = null)
+    protected function validateInteger($attribute, $value, $options = null)
     {
-        if (!is_int($attribute)) {
+        if (!is_int($value) && !is_null($value)) {
             $this->addError($attribute, "Value must be an integer");
         }
     }
 
-    protected function validateMax($attribute, int $max)
+    protected function validateMax($attribute, $value, int $max)
     {
-        if (intval($attribute) > $max) {
+        if (intval($value) > $max) {
             $this->addError($attribute, "Value must be less than or equal to {$max}");
         }
     }

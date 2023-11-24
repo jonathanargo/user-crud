@@ -11,8 +11,43 @@ class TestController extends Controller
 {
     public function index()
     {
-        $user = ManualUser::find(6);
+        $this->purgeRecords();
+    }
 
-        return Response('test');
+    private function updateUser()
+    {
+        $user = ManualUser::find(6);
+        dump("user before", $user->toArray());
+        $user->first_name = 'Foo'.rand(0, 100);
+        $user->save();
+        dd($user->toArray());
+    }
+
+    private function createUser()
+    {
+        $user = new ManualUser();
+        $user->first_name = 'John';
+        $user->last_name = 'Doe';
+        $user->email = 'test@test.com';
+        $user->mobile_number = '123-456-7890';
+        $user->address = '123 Test St';
+        $user->city = 'Testville';
+        $user->state = 'SC';
+        $user->zip = 12345;
+        $user->country = 'us';
+        $user->timezone = '';
+
+        $result = $user->save();
+        dd('final attributes', $user->toArray());
+    }
+
+    private function purgeRecords()
+    {
+        $users = ManualUser::findAll();
+        foreach ($users as $user) {
+            if ($user->id > 6) {
+                $user->delete();
+            }
+        }
     }
 }

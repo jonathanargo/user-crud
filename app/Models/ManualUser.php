@@ -8,21 +8,21 @@ use App\Helpers\AttributeValidator;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Attribute hints for IDE convenience
+ * Attribute hints for IDE convenience only
  * 
- * @param string $id
- * @param string $first_name
- * @param string $last_name
- * @param string $email
- * @param string $mobile_number
- * @param string $address
- * @param string $city
- * @param string $state
- * @param string $zip
- * @param string $country
- * @param string $timezone
- * @param string $created
- * @param string $last_updated
+ * @property string $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property string $mobile_number
+ * @property string $address
+ * @property string $city
+ * @property string $state
+ * @property string $zip
+ * @property string $country
+ * @property string $timezone
+ * @property string $created
+ * @property string $last_updated
  */
 class ManualUser
 {
@@ -93,13 +93,13 @@ class ManualUser
      * @param string $attribute
      * @param string $value
      */
-    public function __set(string $attribute, string $value)
+    public function __set(string $attribute, $value)
     {
         if (array_key_exists($attribute, $this->attributes)) {
             $this->attributes[$attribute] = $value;
+        } else {
+            throw new AttributeDoesNotExistException($attribute);
         }
-
-        throw new AttributeDoesNotExistException($attribute);
     }
 
 
@@ -120,11 +120,31 @@ class ManualUser
     /**
      * Requirement: Get all object properties from the model
      */
-    public function toArray(): array
+    public function toArray($includeProtected = true): array
     {
-        return $this->attributes;
+        $result = $this->attributes;
+
+        // Scrub the protected attributes
+        if (!$includeProtected) {
+            foreach ($this->protectedAttributes as $protectedAttribute) {
+                unset($result[$protectedAttribute]);
+            }
+        }
+
+        return $result;
     }
 
+    /**
+     * Returns true if the model has not yet been saved to the DB
+     */
+    public function isNewRecord(): bool
+    {
+        return empty($this->attributes['id']);
+    }
+
+    /**
+     * These validation rules will be passed to the validator to validate the model
+     */
     protected function getValidationRules(): array
     {
         return [
@@ -136,14 +156,10 @@ class ManualUser
             'address' => ['required', 'string'],
             'city' => ['required', 'string'],
             'state' => ['required', 'string', 'max:2'],
-            'zip' => ['required', 'string'],
+            'zip' => ['required', 'integer'],
             'country' => ['required', 'string'],
             'timezone' => ['string'],
-
-            // These are MySQL datetime fields. 
-            // In the interest of time, rather than implement custom validation for date time, I'm going to validate as generic strings
-            'created' => ['required', 'string', 'on:update'],
-            'last_updated' => ['string']
+            // Note that we don't need to validate the MySQL timestamps
         ];
     }
 
@@ -152,8 +168,14 @@ class ManualUser
      */
     protected function validate(): bool
     {
+        // The context is important for certain validation rules that are only validated on insert or update.
+        $context = 'insert';
+        if (!$this->isNewRecord()) {
+            $context = 'update';
+        }
+        
         $validator = new AttributeValidator();
-        $result = $validator->validate($this->toArray(), $this->getValidationRules());
+        $result = $validator->validate($this->toArray(), $this->getValidationRules(), $context);
         $this->errors = $validator->getErrors();
         return $result;
     }
@@ -164,21 +186,58 @@ class ManualUser
         return $this->errors;
     }
 
+    /**
+     * Requirement - Fetch a row from the database that sets the model properties
+     * 
+     * Locates fetches the user attributes by the user ID and assigns them to the model
+     * 
+     * @param int $id
+     * @throws AttribtuesAlreadyLoadedException if you've already loaded the model. Only call this once.
+     */
     public function loadById(int $id) {
         if ($this->loaded) {
             // We don't allow the user to load the attributes from the DB more than once.
             throw new AttribtuesAlreadyLoadedException();
         }
+        
 
         $userRow = DB::table('users')->where('id', $id)->first();
         if ($userRow){
-            // Directly assign attributes
+            // First clear all existing attributes
+            foreach ($this->attributes as $key => $val) {
+                $this->attributes[$key] = '';
+            }
+
+            // Directly assign attributes from the row.
             $this->attributes = (array)$userRow;
             return true;
         }
         return false;
     }
 
+    /**
+     * Loads all models in the table
+     * 
+     * @return array<ManualUser>
+     */
+    public static function findAll(): array
+    {
+        $users = [];
+        $userRows = DB::table('users')->get();
+        foreach ($userRows as $userRow) {
+            $user = self::find($userRow->id);
+            if ($user instanceof ManualUser) {
+                $users[] = $user;
+            }
+        }
+        return $users;
+    }
+
+    /**
+     * Requirement: Fetch a row from the database that sets the model properties
+     * 
+     * @return ManualUser|null Requested user model, null if not found
+     */
     public static function find(int $id): ManualUser|null
     {
         $user = new ManualUser();
@@ -186,5 +245,55 @@ class ManualUser
             return $user;
         }
         return null;
+    }
+
+    /**
+     * Requirement: Create a row in the database from properties in the model
+     * Requirement: Update a row in the database from properties in the model
+     * 
+     * Saves the model to the DB.
+     * 
+     * @return bool
+     */
+    public function save(): bool
+    {
+        // Validate all of the model validation rules.
+        if (!$this->validate()) {
+            return false; // Stop here if we failed validation
+        }
+
+        $attributes = $this->toArray(false); // We only want the attributes that aren't protected
+
+        // insert or update the record
+        if ($this->isNewRecord()) {
+            $id = DB::table('users')->insertGetId($attributes);
+            $this->id = $id;
+        } else {
+            $attributes['id'] = $this->id; //Need to set the ID for the update
+            DB::table('users')->update($attributes);
+        }
+
+        // Reload the model to get fresh data
+        $this->loaded = false;
+        $this->loadById($this->id);
+
+        return true;
+    }
+
+    /**
+     * Requirement: Delete a row in the database from the primary key in the model
+     * 
+     * Deletes the model
+     * 
+     * @return bool
+     */
+    public function delete(): bool
+    {
+        if ($this->isNewRecord()) {
+            return false;
+        }
+
+        DB::table('users')->where('id', $this->id)->delete();
+        return true;
     }
 }
