@@ -12,6 +12,11 @@ class TestController extends Controller
     public function index()
     {
         $this->purgeRecords();
+        $user = ManualUser::find(6);
+        $user->first_name = '';
+        $result = $user->save();
+        dump($user->toArray());
+        dd($result);
     }
 
     private function updateUser()

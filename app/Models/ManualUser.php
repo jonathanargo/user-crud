@@ -83,7 +83,6 @@ class ManualUser
             return $this->attributes[$attribute];
         }
 
-        // TODO JSA - Throw a custom exception here
         throw new AttributeDoesNotExistException($attribute);
     }
 
@@ -159,7 +158,7 @@ class ManualUser
             'zip' => ['required', 'integer'],
             'country' => ['required', 'string'],
             'timezone' => ['string'],
-            // Note that we don't need to validate the MySQL timestamps
+            // Note that we don't need to validate the MySQL timestamps. Handled by the DB for us.
         ];
     }
 

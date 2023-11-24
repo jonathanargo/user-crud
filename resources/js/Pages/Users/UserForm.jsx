@@ -10,7 +10,7 @@ import states from 'states-us';
 
 import InputMask from 'react-input-mask';
 
-export default function UserForm({ auth, user, mode = 'create'}) {
+export default function UserForm({ auth, user, mode = 'create', showErrorAlert = true}) {
 
     const { data, setData, post, patch, processing, errors, clearErrors } = useForm({
         id: '',
@@ -40,10 +40,10 @@ export default function UserForm({ auth, user, mode = 'create'}) {
 
     const submitCallback = (e) => {
         e.preventDefault;
+        clearErrors();
         if (mode === 'create') {
             post(route('users.store'), {
                 onError: (e) => {
-                    console.error(e);
                     setShowError(true);
                 }
             });
@@ -70,7 +70,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                 <h1 className="font-bold">Profile Info</h1>
                 <p>Manage your personal information, timezone, and profile image.</p>
                 {
-                    showError &&
+                    showError && showErrorAlert &&
                     <Alert variant="danger" onClose={() => setShowError(false)} dismissible>
                         {Object.values(errors).flat().map((error, index) => (
                             <p key={index}>{error}</p>
@@ -78,9 +78,12 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                     </Alert>
                 }
                 <Form>
-                    <Form.Group controlId="studentId">
-                        <Form.Control type="hidden" name="id" value={data.id} />
-                    </Form.Group>
+                    {
+                        mode === 'edit' && 
+                        <Form.Group controlId="id">
+                            <Form.Control type="hidden" name="id" value={data.id} />
+                        </Form.Group>
+                    }
                     <div className="flex space-x-4">
                         
                         <Form.Group controlId="first_name" className="mb-3 flex-grow">
@@ -88,7 +91,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                             <Form.Control
                                 type="text"
                                 name="first_name"
-                                value={data.first_name}
+                                value={data.first_name ?? ''}
                                 onChange={handleChange}
                             />
                             <InputError message={errors['first_name']} className="mt-2" />
@@ -99,7 +102,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                             <Form.Control
                                 type="text"
                                 name="last_name"
-                                value={data.last_name}
+                                value={data.last_name ?? ''}
                                 onChange={handleChange}
                             />
                             <InputError message={errors['last_name']} className="mt-2" />
@@ -111,7 +114,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <Form.Control
                             type="email"
                             name="email"
-                            value={data.email}
+                            value={data.email ?? ''}
                             onChange={handleChange}
                         />
                         <InputError message={errors['email']} className="mt-2" />
@@ -122,7 +125,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <InputMask
                             mask="999-999-9999"
                             maskChar="_"
-                            value={data.mobile_number}
+                            value={data.mobile_number ?? ''}
                             onChange={handleChange}
                         >
                         {() => <Form.Control type="text" name="mobile_number" />}
@@ -135,7 +138,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <Form.Control
                             type="text"
                             name="address"
-                            value={data.address}
+                            value={data.address ?? ''}
                             onChange={handleChange}
                         />
                         <InputError message={errors['address']} className="mt-2" />
@@ -146,7 +149,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <Form.Control
                             type="text"
                             name="city"
-                            value={data.city}
+                            value={data.city ?? ''}
                             onChange={handleChange}
                         />
                         <InputError message={errors['city']} className="mt-2" />
@@ -154,7 +157,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
 
                     <Form.Group controlId="state" className="mb-3">
                         <Form.Label>State / Province</Form.Label>
-                        <Form.Select name="state" value={data.state} onChange={handleChange}>
+                        <Form.Select name="state" value={data.state ?? ''} onChange={handleChange}>
                             <option key="" value=""></option>
                             {states.map((state, index) => (
                                 <option key={index} value={state.abbreviation}>{state.name}</option>
@@ -168,7 +171,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
                         <Form.Control
                             type="text"
                             name="zip"
-                            value={data.zip}
+                            value={data.zip ?? ''}
                             onChange={handleChange}
                         />
                         <InputError message={errors['zip']} className="mt-2" />
@@ -176,7 +179,7 @@ export default function UserForm({ auth, user, mode = 'create'}) {
 
                     <Form.Group controlId="country" className="mb-3">
                         <Form.Label>Country</Form.Label>
-                        <Form.Select name="country" value={data.country} onChange={handleChange}>
+                        <Form.Select name="country" value={data.country ?? ''} onChange={handleChange}>
                             <option key="" value=""></option>
                             {Object.entries(getCodeList()).map(([code, name], index) => (
                                 <option key={index} value={code}>

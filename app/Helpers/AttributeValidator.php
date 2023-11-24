@@ -55,8 +55,7 @@ class AttributeValidator
                 $this::$method($attribute, $attributes[$attribute], $r[1]);
             }
         }
-
-        return true;
+        return empty($this->errors);
     }
 
     public function getErrors(): array
@@ -73,13 +72,11 @@ class AttributeValidator
         $this->errors[$attribute][] = $error;
     }
 
-    protected function validateRequired($attribute, $value, $options = null): bool
+    protected function validateRequired($attribute, $value, $options = null)
     {
         if (empty($value)) {
             $this->addError($attribute, "Value is required.");
         }
-
-        return true;
     }
 
     protected function validateString($attribute, $value, $options = null)
@@ -91,7 +88,7 @@ class AttributeValidator
 
     protected function validateInteger($attribute, $value, $options = null)
     {
-        if (!is_int($value) && !is_null($value)) {
+        if (!is_numeric($value) && !is_null($value)) {
             $this->addError($attribute, "Value must be an integer");
         }
     }
