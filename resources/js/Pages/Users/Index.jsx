@@ -16,9 +16,9 @@ import {
 
 export default function Index({ auth, users }) {
     const header = [
+        { title: 'ID', prop: 'id', sortabisSortablele: true},
         { title: 'First Name', prop: 'first_name', isSortable: true},
         { title: 'Last Name', prop: 'last_name', isSortable: true},
-        { title: 'Email', prop: 'email', isSortable: true},
         { title: '', prop: 'actions', cell: (user) => (
             <Dropdown>
                 <Dropdown.Toggle variant="light" id="dropdown-basic">
@@ -58,15 +58,28 @@ export default function Index({ auth, users }) {
                 }}
             >
                 <Row className="mb-4">
-                    <Col xs={12} lg={4} className="d-flex flex-col justify-content-end align-items-start">
+                    <Col xs={12} className="d-flex align-items-start">
                         <Button variant="primary" onClick={showCreateForm}>Create User</Button>
                     </Col>
                     
-                    <Col xs={12} sm={6} lg={4} className="d-flex flex-col justify-content-end align-items-end">
-                        <Pagination />
-                    </Col>
-                    <Col xs={12} sm={6} lg={4} className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0">
+                </Row>
+                <Row className="mb-4">
+                    <Col
+                        xs={12}
+                        sm={6}
+                        lg={4}
+                        className="d-flex flex-col align-items-start mb-2 mb-sm-0"
+                    >
                         <PaginationOptions />
+                    </Col>
+                    
+                    <Col
+                        xs={12}
+                        sm={6}
+                        lg={4}
+                        className="d-flex flex-col justify-content-end align-items-end"
+                    >
+                        <Pagination />
                     </Col>
                 </Row>
                 <Table>
