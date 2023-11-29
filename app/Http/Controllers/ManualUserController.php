@@ -32,7 +32,7 @@ class ManualUserController extends Controller
     {
         return Inertia::render('Users/UserForm', [
             'user' => new ManualUser(),
-            'mode' => 'create'
+            'mode' => 'create',
         ]);
     }
 

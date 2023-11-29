@@ -4,7 +4,6 @@ import { Form, Button } from 'react-bootstrap';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 import { getName } from 'country-list';
-import states from 'states-us';
 
 export default function Show({ auth, user }) {
     const returnCallback = () => {
@@ -64,7 +63,7 @@ export default function Show({ auth, user }) {
                     <Form.Group controlId="state" className="mb-3">
                         <Form.Label className="font-bold">State / Province</Form.Label>
                         <div className="mt-1 text-base text-gray-900 sm:mt-0 sm:col-span-2">
-                            {states.find(state => state.abbreviation === user.state).name}
+                            {user.state}
                         </div>
                     </Form.Group>
                     <Form.Group controlId="zip" className="mb-3">

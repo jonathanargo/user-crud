@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Form, Button } from 'react-bootstrap';
 import { useForm, Head, router } from '@inertiajs/react';
@@ -7,8 +7,12 @@ import InputError from '@/Components/InputError';
 import { Alert } from 'react-bootstrap';
 import { getCodeList } from 'country-list';
 import states from 'states-us';
-
 import InputMask from 'react-input-mask';
+import { GoogleMap, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+
+
+const libraries = ['places'];
+const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 export default function UserForm({ auth, user, mode = 'create', showErrorAlert = true}) {
 
@@ -30,6 +34,7 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
             setData(user);
         }
     }, [mode, user]);
+
 
     const [showError, setShowError] = useState(false);
 
@@ -61,11 +66,52 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
         router.visit(route('users.index'));
     };
 
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: apiKey,
+        libraries: libraries
+    });
+
+    const autoCompleteRef = useRef(null);
+
+    // Create a ref to data so that we can access it inside useEffect below
+    const dataRef = useRef(data);
+    useEffect(() => {
+        dataRef.current = data;
+    }, [data]);
+
+    useEffect(() => {
+        if (isLoaded) {
+            const autocomplete = new window.google.maps.places.Autocomplete(autoCompleteRef.current);
+            autocomplete.addListener("place_changed", () => {
+                const selectedPlace = autocomplete.getPlace();
+                
+                // Get the address fields for the selected place
+                let streetNumber = selectedPlace.address_components.find(component => component.types.includes('street_number')).long_name;
+                let streetName = selectedPlace.address_components.find(component => component.types.includes('route')).long_name;
+                let city = selectedPlace.address_components.find(component => component.types.includes('locality')).long_name;
+                let state = selectedPlace.address_components.find(component => component.types.includes('administrative_area_level_1')).short_name;
+                let zip = selectedPlace.address_components.find(component => component.types.includes('postal_code')).long_name;
+                let country = selectedPlace.address_components.find(component => component.types.includes('country')).short_name;
+
+                // Populate them, but use the dataRef so that we don't wipe out the existing fields.
+                setData({ ...dataRef.current,
+                    address: streetNumber + ' ' + streetName,
+                    city: city,
+                    state: state,
+                    zip: zip,
+                    country: country.toLowerCase()
+                });
+            });
+        }
+    }, [isLoaded]);
+
     let title = (mode === 'create' ? 'Create User' : 'Update User');
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title={title} />
+            <Head title={title}>
+            </Head>
             <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
                 <h1 className="font-bold">Profile Info</h1>
                 <p>Manage your personal information, timezone, and profile image.</p>
@@ -79,13 +125,13 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
                 }
                 <Form>
                     {
-                        mode === 'edit' && 
+                        mode === 'edit' &&
                         <Form.Group controlId="id">
                             <Form.Control type="hidden" name="id" value={data.id} />
                         </Form.Group>
                     }
                     <div className="flex space-x-4">
-                        
+
                         <Form.Group controlId="first_name" className="mb-3 flex-grow">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control
@@ -128,7 +174,7 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
                             value={data.mobile_number ?? ''}
                             onChange={handleChange}
                         >
-                        {() => <Form.Control type="text" name="mobile_number" />}
+                            {() => <Form.Control type="text" name="mobile_number" />}
                         </InputMask>
                         <InputError message={errors['mobile_number']} className="mt-2" />
                     </Form.Group>
@@ -140,6 +186,7 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
                             name="address"
                             value={data.address ?? ''}
                             onChange={handleChange}
+                            ref={autoCompleteRef}
                         />
                         <InputError message={errors['address']} className="mt-2" />
                     </Form.Group>
@@ -157,12 +204,12 @@ export default function UserForm({ auth, user, mode = 'create', showErrorAlert =
 
                     <Form.Group controlId="state" className="mb-3">
                         <Form.Label>State / Province</Form.Label>
-                        <Form.Select name="state" value={data.state ?? ''} onChange={handleChange}>
-                            <option key="" value=""></option>
-                            {states.map((state, index) => (
-                                <option key={index} value={state.abbreviation}>{state.name}</option>
-                            ))}
-                        </Form.Select>
+                        <Form.Control
+                            type="text"
+                            name="state"
+                            value={data.state ?? ''}
+                            onChange={handleChange}
+                        />
                         <InputError message={errors['state']} className="mt-2" />
                     </Form.Group>
 

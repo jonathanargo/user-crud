@@ -155,7 +155,7 @@ class ManualUser
             'address' => ['required', 'string'],
             'city' => ['required', 'string'],
             'state' => ['required', 'string', 'max:2'],
-            'zip' => ['required', 'integer'],
+            'zip' => ['required', 'string'],
             'country' => ['required', 'string'],
             'timezone' => ['string'],
             // Note that we don't need to validate the MySQL timestamps. Handled by the DB for us.
