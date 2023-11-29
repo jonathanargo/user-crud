@@ -26,7 +26,7 @@ class UserFactory extends Factory
             'address' => fake()->streetAddress(),
             'city' => fake()->city(),
             'state' => fake()->stateAbbr(),
-            'zip' => fake()->numberBetween(10000, 99999),
+            'zip' => strval(fake()->numberBetween(10000, 99999)),
             'country' => fake()->countryCode(),
             'timezone' => fake()->timezone(),
             'created' => fake()->dateTimeThisYear(),

@@ -202,7 +202,6 @@ class ManualUser
             // We don't allow the user to load the attributes from the DB more than once.
             throw new AttribtuesAlreadyLoadedException();
         }
-        
 
         $userRow = DB::table('users')->where('id', $id)->first();
         if ($userRow){
@@ -212,7 +211,9 @@ class ManualUser
             }
 
             // Directly assign attributes from the row.
-            $this->attributes = (array)$userRow;
+            foreach ($userRow as $key => $val) {
+                $this->attributes[$key] = strval($val); // Need to cast to string for consistent handling of validation
+            }
             return true;
         }
         return false;

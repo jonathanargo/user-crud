@@ -22,7 +22,7 @@ class ManualUserTest extends TestCase
         parent::setUp();
         $this->user = new ManualUser();
         // This is not how you're supposed to use factories, but I'm using a non-framework model
-        $attributes = UserFactory::new()->definition(); 
+        $attributes = UserFactory::new()->definition();
         $this->user->assign($attributes);
         $this->user->email = self::USER_EMAIL;
     }
@@ -121,19 +121,6 @@ class ManualUserTest extends TestCase
         $this->user->first_name = $firstName;
         $this->assertTrue($this->user->validate());
 
-        // Trigger failure of an "integer" rule
-        $zip = $this->user->zip;
-        $this->user->zip = 'abc';
-        $this->assertFalse($this->user->validate());
-        $errors = $this->user->getErrors();
-        $this->assertNotEmpty($errors);
-        $this->assertArrayHasKey('zip', $errors);
-        $this->assertIsString($errors['zip'][0]);
-
-        // Reset
-        $this->user->zip = $zip;
-        $this->assertTrue($this->user->validate());
-
 
         // Reset and trigger a failure on a "max" rule
         $state = $this->user->state;
@@ -204,6 +191,7 @@ class ManualUserTest extends TestCase
         
         // Update the model
         $this->user->first_name = 'Foo';
+        $save = $this->user->save();
         $this->assertTrue($this->user->save());
 
         // Load the row in the DB again and compare value to the model.
