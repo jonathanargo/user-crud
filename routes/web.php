@@ -18,10 +18,21 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (env('ALLOW_REGISTRATION', false)) {
+    Route::get('/', function () {
+        return Inertia::render('Welcome', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => true,
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
+    });
+} else {
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
+}
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
