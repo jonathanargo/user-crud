@@ -124,6 +124,8 @@ class ManualUser
 
     /**
      * Requirement: Get all object properties from the model
+     * 
+     * Dumps the $model->attributes as an array
      */
     public function toArray($includeProtected = true): array
     {
@@ -170,6 +172,8 @@ class ManualUser
 
     /**
      * Requirement: Validation of the object’s properties
+     * 
+     * Runs validation per the validation rules defined above
      */
     public function validate(): bool
     {
@@ -203,7 +207,8 @@ class ManualUser
      * @param int $id
      * @throws AttribtuesAlreadyLoadedException if you've already loaded the model. Only call this once.
      */
-    public function loadById(int $id) {
+    public function loadById(int $id)
+    {
         if ($this->loaded) {
             // We don't allow the user to load the attributes from the DB more than once.
             throw new AttribtuesAlreadyLoadedException();
