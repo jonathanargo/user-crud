@@ -97,7 +97,7 @@ class AttributeValidator
     {
         // Note this validates string length and numeric value
         if (is_string($value) && strlen($value) > $max) {
-            $this->addError($attribute, "Value must be fewer than {$max} characters.");
+            $this->addError($attribute, "Value must be no more than {$max} characters.");
         } elseif (is_numeric($value) && intval($value) > $max) {
             $this->addError($attribute, "Value must be less than or equal to {$max}");
         }
