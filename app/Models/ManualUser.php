@@ -75,7 +75,10 @@ class ManualUser
     /** 
      * Requirement: Get a single object property from the model
      * 
+     * Used to access the model attributes array
+     * 
      * @param string $attribute
+     * @throws AttributeDoesNotExistException if the attribute doesn't exist
      */
     public function __get(string $attribute): string
     {
@@ -89,8 +92,11 @@ class ManualUser
     /**
      * Requirement: Set a single object property on the model
      * 
+     * Used to access the model attributes array
+     * 
      * @param string $attribute
      * @param string $value
+     * @throws AttributeDoesNotExistException if the attribute doesn't exist
      */
     public function __set(string $attribute, $value)
     {
