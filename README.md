@@ -23,11 +23,11 @@ Run migrations:
 `vendor/bin/sail artisan migrate`
 
 Run the vite server for the front end: 
-`sail npm run dev`
+`vendor/bin/sail npm run dev`
 
 You should be able to access the application running on http://localhost. If you're getting connection errors, you may need to use a private browser window (in my experience Chrome automatically redirected me to https).
 
 ## Tests
 A PHPUnit test is included for confirming that the ManualUser class meets all of the project parameters. Run it using the following command:
 
-`sail artisan test`
+`venor/bin/sail artisan test`
